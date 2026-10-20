@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.octava.app",
+      "sha256_cert_fingerprints": [
+        "51:BC:FA:A5:8C:BF:47:32:1C:B6:0C:E9:1F:92:27:1B:CC:E8:F1:8F:92:AA:3E:C0:CF:8B:9B:EF:57:A3:EB:AD"
+      ]
+    }
+  }
+]
