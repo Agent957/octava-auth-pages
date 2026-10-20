@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex" />
+<title>Opening OCTAVA…</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --forest: #1F3D2F;
+    --ivory: #F6F4EF;
+    --surface: #FFFFFF;
+    --charcoal: #1E211F;
+    --stone: #6B6F6A;
+    --line: #E6E2DA;
+    --emerald: #2E7D5B;
+    --error-tint: #F5E6E0;
+    --error-text: #8F3F29;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --forest: #4C8A68;
+      --ivory: #121614;
+      --surface: #1B201D;
+      --charcoal: #EDEBE5;
+      --stone: #8E968F;
+      --line: #262B27;
+      --emerald: #7FBF9C;
+      --error-tint: #2E211B;
+      --error-text: #E2896B;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    min-height: 100dvh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--ivory);
+    color: var(--charcoal);
+    font-family: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    padding: 24px;
+  }
+  .card {
+    width: 100%;
+    max-width: 360px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 20px;
+  }
+  .mark {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    background: var(--forest);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .mark svg { width: 26px; height: 26px; }
+  h1 {
+    margin: 0;
+    font-size: 19px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  p.sub {
+    margin: -8px 0 0;
+    font-size: 14px;
+    color: var(--stone);
+    line-height: 1.5;
+  }
+  .spinner {
+    width: 22px;
+    height: 22px;
+    border-radius: 999px;
+    border: 2.5px solid var(--line);
+    border-top-color: var(--forest);
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .btn {
+    appearance: none;
+    border: none;
+    width: 100%;
+    padding: 15px 20px;
+    border-radius: 14px;
+    background: var(--forest);
+    color: var(--ivory);
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 500;
+    text-decoration: none;
+    display: inline-block;
+    cursor: pointer;
+  }
+  .btn:active { opacity: 0.85; }
+  .hint {
+    font-size: 12px;
+    color: var(--stone);
+  }
+  .error-box {
+    width: 100%;
+    background: var(--error-tint);
+    color: var(--error-text);
+    border-radius: 14px;
+    padding: 14px 16px;
+    font-size: 13px;
+    line-height: 1.5;
+    text-align: left;
+  }
+  .state { display: flex; flex-direction: column; align-items: center; gap: 20px; width: 100%; }
+  [hidden] { display: none !important; }
+  @media (prefers-reduced-motion: reduce) {
+    .spinner { animation: none; border-top-color: var(--forest); }
+  }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="mark" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="9" stroke="#F6F4EF" stroke-width="2"/>
+        <circle cx="12" cy="12" r="3" fill="#F6F4EF"/>
+      </svg>
+    </div>
+
+    <div id="opening" class="state">
+      <h1>Opening OCTAVA…</h1>
+      <p class="sub">Finishing sign-in. This should only take a second.</p>
+      <div class="spinner" role="status" aria-label="Opening the app"></div>
+      <a id="openBtn" class="btn" href="#">Open OCTAVA</a>
+      <p class="hint">If nothing happens, tap the button above.</p>
+    </div>
+
+    <div id="errorState" class="state" hidden>
+      <h1>Link problem</h1>
+      <div class="error-box" id="errorMessage"></div>
+      <a class="btn" href="octava://">Open OCTAVA</a>
+      <p class="hint">You can request a new link from the app.</p>
+    </div>
+
+    <div id="plainState" class="state" hidden>
+      <h1>OCTAVA</h1>
+      <p class="sub">Your money, in perspective.</p>
+      <a class="btn" href="octava://">Open OCTAVA</a>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var hash = window.location.hash ? window.location.hash.slice(1) : '';
+      var search = window.location.search ? window.location.search.slice(1) : '';
+      var params = new URLSearchParams(hash || search);
+
+      var errorDesc = params.get('error_description') || params.get('error');
+      var hasToken = params.get('access_token') || params.get('code');
+
+      var openingEl = document.getElementById('opening');
+      var errorEl = document.getElementById('errorState');
+      var plainEl = document.getElementById('plainState');
+      var openBtn = document.getElementById('openBtn');
+
+      function show(el) {
+        openingEl.hidden = true;
+        errorEl.hidden = true;
+        plainEl.hidden = true;
+        el.hidden = false;
+      }
+
+      if (errorDesc) {
+        document.getElementById('errorMessage').textContent = decodeURIComponent(errorDesc.replace(/\+/g, ' '));
+        show(errorEl);
+        return;
+      }
+
+      if (!hasToken) {
+        show(plainEl);
+        return;
+      }
+
+      var forward = hash || search;
+      var isAndroid = /Android/i.test(navigator.userAgent);
+      var deepLink = isAndroid
+        ? 'intent://auth/callback?' + forward + '#Intent;scheme=octava;package=com.octava.app;S.browser_fallback_url=' +
+          encodeURIComponent('https://octava.tryflowdesk.space/auth/callback?' + forward) + ';end'
+        : 'octava://auth/callback#' + forward;
+
+      openBtn.setAttribute('href', deepLink);
+      show(openingEl);
+
+      // Best-effort automatic hand-off — many in-app browsers (Gmail, Outlook) block
+      // a scripted top-level navigation to a custom scheme, which is exactly why the
+      // visible "Open OCTAVA" button above always stays as the real fallback.
+      window.location.replace(deepLink);
+    })();
+  </script>
+</body>
+</html>
