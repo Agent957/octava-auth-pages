@@ -1,0 +1,14 @@
+{
+  "name": "OCTAVA",
+  "short_name": "OCTAVA",
+  "description": "Multi-currency personal finance",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F6F4EF",
+  "theme_color": "#1F3D2F",
+  "icons": [
+    { "src": "/icon.png", "sizes": "1024x1024", "type": "image/png", "purpose": "any" }
+  ]
+}
